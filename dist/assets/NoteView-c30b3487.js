@@ -1,0 +1,1 @@
+import{ar as o,y as r,K as s,O as a}from"./index-0ad5bb98.js";import{E as c}from"./el-empty-2ff08a4a.js";import"./index-ad4b2e5d.js";const n={data(){return{}},methods:{getNote(){return!0}}};function p(m,_,d,f,i,e){const t=c;return e.getNote()?(r(),s(t,{key:0,description:"暂无笔记",style:{"flex-grow":"1"}})):a("",!0)}const x=o(n,[["render",p]]);export{x as default};
