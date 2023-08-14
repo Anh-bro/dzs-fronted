@@ -1,10 +1,10 @@
 <script>
-
+import {getAllNote} from "../api/api"
 export default {
   data(){
     return{
       username: this.$route.query.username,
-
+      note:""
     }
   },
   mounted() {
@@ -12,6 +12,16 @@ export default {
     console.log(this.$route.query)
     console.log(this.username)
     // username=this.$route.query
+    this.fetchNote()
+  },
+  methods:{
+    async fetchNote(){ 
+      getAllNote().then(res=>{
+        if(res.data.length!=0){
+          this.note=res.data[res.data.length-1].content
+        }
+      })
+    }
   }
 }
 </script>
@@ -32,14 +42,6 @@ export default {
         </div>
 
       </el-card>
-      <el-card shadow="hover" style="margin-top:20px;">
-        <template #header>
-          <div class="card-header">
-            <span>最近的书签</span>
-          </div>
-        </template>
-        <div style="height:260px">暂无书签</div>
-      </el-card>
     </el-col>
     <el-col :span="16" style="margin-top:20px ;">
       <div class="block text-center" m="t-4">
@@ -49,14 +51,21 @@ export default {
           </el-carousel-item>
         </el-carousel>
       </div>
+    </el-col>
+    <el-col :span="24">
+      
       <el-card shadow="hover" style="margin-top:20px;">
+        
         <template #header>
           <div class="card-header">
             <span>最近的笔记</span>
           </div>
         </template>
 
-        <div style="height:230px">暂无笔记</div>
+        <div v-if="this.note.length==0" style="height:230px">暂无笔记</div>
+        <div v-else style="height:230px">{{note}}</div>
+        
+
       </el-card>
     </el-col>
   </el-row>
