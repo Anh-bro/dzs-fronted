@@ -4,7 +4,8 @@ export default {
   data(){
     return{
       username: this.$route.query.username,
-      note:""
+      note:"",
+      
     }
   },
   mounted() {
@@ -13,6 +14,7 @@ export default {
     console.log(this.username)
     // username=this.$route.query
     this.fetchNote()
+
   },
   methods:{
     async fetchNote(){ 
@@ -28,7 +30,7 @@ export default {
 
 <template>
   <el-row class="home" :gutter="20" type="flex">
-    <el-col :span="8" style="margin-top:20px;">
+    <el-col  :span="8" style="overflow-x: hidden;">
       <el-card shadow="hover">
         <div class="user">
           <img src="../assets/images/QQ图片20221125222615.jpg" alt="">
@@ -43,7 +45,7 @@ export default {
 
       </el-card>
     </el-col>
-    <el-col :span="16" style="margin-top:20px ;">
+    <el-col :span="16" style="overflow-x: hidden;">
       <div class="block text-center" m="t-4">
         <el-carousel trigger="click" height="240px">
           <el-carousel-item v-for="item in 4" :key="item">

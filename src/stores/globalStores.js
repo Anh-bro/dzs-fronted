@@ -4,9 +4,11 @@ import { defineStore } from 'pinia'
 export const useStore = defineStore('isCollapse', {
   state: () => {
     return {
-      isCollapse: false,
+      isCollapse: true,
       wid: 'w200',
-      aid:1
+      aid:1,
+      txt:'系统',
+      loading:false,
     }
   },
   // 也可以定义为
@@ -15,8 +17,10 @@ export const useStore = defineStore('isCollapse', {
     doCollapse() {
       this.isCollapse = !this.isCollapse
       if (this.isCollapse) {
+        this.txt='系统'
         this.wid = ''
       } else {
+        this.txt='电子手册系统'
         this.wid = 'w200'
       }
     },

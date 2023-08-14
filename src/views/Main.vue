@@ -45,7 +45,7 @@ import CommonHeader from '../components/CommonHeader.vue'
 
 .el-container {
   flex-wrap: wrap;
-  align-items: baseline;
+  align-items: flex-start;
 }
 
 .commoncontent {

@@ -1,6 +1,7 @@
 <script>
 import {getAllNote,deleteNoteByAidOrderid} from "../api/api"
 import { useStore } from '../stores/globalStores.js'
+import { ElNotification } from 'element-plus'
 export default {
     data() {
         const store = useStore()
@@ -57,6 +58,11 @@ export default {
                     if (itemindex == index) {
                         arr.splice(index,1);
                     }
+                    ElNotification({
+                        title: '提示',
+                        message: '笔记删除成功！',
+                        type: 'success'
+                    })
                 });
             })
         },

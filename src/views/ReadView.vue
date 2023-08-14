@@ -56,9 +56,9 @@
 </style>
 
 <template>
-  <el-row gutter="20">
+  <el-row gutter="20" v-loading="loading">
     <el-col :span="6" style="overflow-x: hidden;">
-      <el-card shadow="hover" @click="clickTreeNode">
+      <el-card shadow="hover" @click="clickTreeNode" v-loading="loading">
         <el-input placeholder="输入关键字进行过滤" v-model="filterText">
         </el-input>
         <el-scrollbar max-height="600px">
@@ -161,6 +161,7 @@ export default {
         console.log(res)
         this.noteData=res.data
       })
+      this.loading=false
     },
     async fetchNote(){        //获取笔记数据
       await getNote(this.aid).then(res=>{
