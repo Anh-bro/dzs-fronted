@@ -50,3 +50,11 @@ export function updateNote(data){
         params:data
     })
 }
+
+export function deleteNoteByAidOrderid(data){
+    return request({
+        url: "/note/deleteNoteByAidOrderid", 
+        method: "get", 
+        params:data
+    })
+}

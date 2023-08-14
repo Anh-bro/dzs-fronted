@@ -1,12 +1,12 @@
 <script>
-import {getAllNote} from "../api/api"
+import {getAllNote,deleteNoteByAidOrderid} from "../api/api"
 import { useStore } from '../stores/globalStores.js'
 export default {
     data() {
         const store = useStore()
         return {
             totalPage:0,
-            pageSize:8,
+            pageSize:4,
             noteData:[{
                 date: '2016-05-02',
                 name: '王小虎',
@@ -46,8 +46,19 @@ export default {
         handleEdit(index, row) {
             console.log(index, row);
         },
-        handleDelete(index, row) {
-            console.log(index, row);
+        async handleDelete(index) {
+            console.log(this.tableData[index].orderid);
+            await deleteNoteByAidOrderid({
+                aid:this.tableData[index].aid,
+                orderid:this.tableData[index].orderid
+            }).then(res=>{
+                console.log(res)
+                this.tableData.forEach(function (item,itemindex,arr){
+                    if (itemindex == index) {
+                        arr.splice(index,1);
+                    }
+                });
+            })
         },
         onCurrentChange(p){
             console.log(p)
@@ -67,7 +78,7 @@ export default {
 <template>
     <el-empty v-if='noteData.length==0' description="暂无笔记" style="flex-grow:1" />
     <el-row v-else>
-        <el-col :span="24">
+        <el-col style="overflow-x:hidden ;" :span="24">
             <el-card >
                 <!-- <h2>数据展示</h2> -->
                 <el-table
@@ -83,13 +94,13 @@ export default {
                     prop="content">
                     </el-table-column>
                     <el-table-column  label="Operations" width="150px">
-                        <template #default>
-                            <el-button link type="primary" size="small" @click="handleClick">Delete</el-button>
+                        <template #default="scope">
+                            <el-button link type="primary" size="small" @click="handleDelete(scope.$index)">Delete</el-button>
                             <!-- <el-button link type="primary" size="small">Edit</el-button> -->
                         </template>
                     </el-table-column>
                 </el-table>
-                <el-pagination background layout="prev, pager, next" :total="totalPage" :page-size="8" @current-change="onCurrentChange"/>
+                <el-pagination background layout="prev, pager, next" :total="totalPage" :page-size="4" @current-change="onCurrentChange"/>
             </el-card>
         </el-col>
         

@@ -57,7 +57,7 @@
 
 <template>
   <el-row gutter="20">
-    <el-col :span="6">
+    <el-col :span="6" style="overflow-x: hidden;">
       <el-card shadow="hover" @click="clickTreeNode">
         <el-input placeholder="输入关键字进行过滤" v-model="filterText">
         </el-input>
@@ -78,7 +78,7 @@
         </el-scrollbar>
 
       </el-card>
-      <el-card style="margin-top: 20px;">
+      <el-card shadow="hover" style="margin-top: 20px;">
         <div class="dohistry" style="height:140px">
 
           <el-button @click="open">Add Item</el-button>
@@ -86,7 +86,7 @@
         </div>
       </el-card>
     </el-col>
-    <el-col :span="18" ref="asd">
+    <el-col style="overflow-x: hidden;" :span="18" ref="asd">
       <el-scrollbar max-height="600px" ref="page" style="scroll-bahavior: smooth;">
 
         <div v-for="(item, itemIndex) in textData" :class="item.level" class="pa" @mouseup="handleMouseUp" >
@@ -153,11 +153,11 @@ export default {
         console.log(res)
         this.data= res.data
       })
-      await getPassage(1).then(res=>{
+      await getPassage(this.aid).then(res=>{
         console.log(res)
         this.textData=res.data
       })
-      await getNote(1).then(res=>{
+      await getNote(this.aid).then(res=>{
         console.log(res)
         this.noteData=res.data
       })
@@ -275,7 +275,7 @@ export default {
 
     return {
       pid:1,
-      aid:1,
+      aid:3,
       dialogFormVisible: false,
       loading: true,
       filterText: '',
@@ -288,7 +288,7 @@ export default {
       noteData: [
         {
           orderid: 2,
-          content: "这是一段笔记这是一段笔记这是一段笔记这是一段笔记这是一段笔记这是一段笔记这是一段笔记这是一段笔记"
+          content: "这是一段笔记"
         }
       ],
       markData: ['3-2'
