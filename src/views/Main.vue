@@ -5,12 +5,12 @@ import CommonHeader from '../components/CommonHeader.vue'
 
 <template>
   <div class="common-layout">
-    <el-container class="commoncontent" style="overflow:hidden">
+    <el-container class="commoncontent" style="overflow:hidden;height:100%">
 
       <CommonAside></CommonAside>
-      <el-container>
+      <el-container style="height: 100%;">
         <CommonHeader></CommonHeader>
-        <el-main >
+        <el-main style="height: 90%;">
           <router-view></router-view>
         </el-main>
       </el-container>

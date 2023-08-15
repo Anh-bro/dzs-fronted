@@ -63,12 +63,12 @@
         </el-input>
         <el-scrollbar max-height="600px">
           <el-tree style="max-height: 350px;" class="filter-tree" :data="data" :props="defaultProps" 
-            :filter-node-method="filterNode" ref="tree">
+            :filter-node-method="filterNode" node-key="id" :default-expanded-keys="expandkey" ref="tree">
 
             <template #default="{ node, data }">
               <span class="custom-tree-node">
                 <span>{{ node.label }}</span>
-                <span v-if="data.children.length==0">
+                <span v-if="data.children.length == 0">
                   <a @click="jump(data)"> 跳转 </a>
                 </span>
               </span>
@@ -145,10 +145,17 @@ export default {
     },
   },
   mounted() {
+    // console.log(this.$route.query)
+    if(this.$route.query.aid!=undefined){
+      this.aid=this.$route.query.aid
+      this.expandkey.push(Number(this.$route.query.aid))
+    }
+    console.log(this.expandkey)
     this.fetchData()
   },
   methods: {
     async fetchData(){
+      console.log(this.aid)
       await getIndex().then(res => {
         console.log(res)
         this.data= res.data
@@ -162,6 +169,8 @@ export default {
         this.noteData=res.data
       })
       this.loading=false
+      console.log(this.expandkey)
+
     },
     async fetchNote(){        //获取笔记数据
       await getNote(this.aid).then(res=>{
@@ -241,6 +250,7 @@ export default {
     async jump(data) {
       console.log(data.pid)
       // this.goAnchor(data.tagId)
+      this.loading=true
       await getPassage(data.pid).then(res=>{
         console.log(res)
 
@@ -258,7 +268,7 @@ export default {
         this.noteData=res.data
       })
       this.$forceUpdate()
-      
+      this.loading=false
 
     },
 
@@ -276,8 +286,9 @@ export default {
 
     return {
       pid:1,
-      aid:3,
+      aid:2,
       dialogFormVisible: false,
+      expandkey:[],
       loading: true,
       filterText: '',
       count: 23,
@@ -363,7 +374,6 @@ export default {
           label: '二级 1-1',
           children: [{
             id: 9,
-            tagId: '3',
             label: '三级 1-1-1'
           }, {
             id: 10,

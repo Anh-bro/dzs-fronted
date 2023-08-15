@@ -49,12 +49,12 @@ export default {
                 </el-icon>
                 <template #title>阅读</template>
             </el-menu-item>
-            <el-menu-item @click="menuItemClick" index="/tags">
+            <!-- <el-menu-item @click="menuItemClick" index="/tags">
                 <el-icon>
                     <Collection />
                 </el-icon>
                 <template #title>书签</template>
-            </el-menu-item>
+            </el-menu-item> -->
             <el-menu-item @click="menuItemClick" index="/note">
                 <el-icon>
                     <DocumentCopy />

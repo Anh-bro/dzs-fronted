@@ -6,6 +6,7 @@ export default {
     data() {
         const store = useStore()
         return {
+            loading:false,
             totalPage:0,
             pageSize:4,
             noteData:[{
@@ -36,16 +37,26 @@ export default {
     },
     methods: {
         async fetchNote(){        //获取笔记数据
+            this.loading=true
             await getAllNote(this.aid).then(res=>{
+                console.log(res)
                 this.noteData=res.data
                 this.totalPage=res.data.length
                 this.tableData=this.noteData.slice(0,this.pageSize)
                 console.log(res.data)
             })
-            
+            this.loading=false
         },
         handleEdit(index, row) {
             console.log(index, row);
+        },
+        jumptotitle(i){
+            console.log(this.noteData[i].aid)
+            this.$router.push({ 
+                  name: 'read',
+                  query: {aid:this.noteData[i].aid}
+                });
+
         },
         async handleDelete(index) {
             console.log(this.tableData[index].orderid);
@@ -83,7 +94,7 @@ export default {
 </script>
 <template>
     <el-empty v-if='noteData.length==0' description="暂无笔记" style="flex-grow:1" />
-    <el-row v-else>
+    <el-row v-else v-loading="loading">
         <el-col style="overflow-x:hidden ;" :span="24">
             <el-card >
                 <!-- <h2>数据展示</h2> -->
@@ -95,6 +106,13 @@ export default {
                     prop="orderid"
                     width="120">
                     </el-table-column> -->
+                    <el-table-column label="Title" prop="title" width="150px">
+                        <template #default="scope">
+                            <el-button link type="primary" size="small" @click="jumptotitle(scope.$index)">{{scope.row.title}}</el-button>
+                            <!-- <el-button link type="primary" size="small">Edit</el-button> -->
+                        </template>
+                    </el-table-column>
+                    
                     <el-table-column
                     label="Content"
                     prop="content">
@@ -115,10 +133,11 @@ export default {
 </template>
 <style>
 .el-card{
-    height: 500px;
+    height: 600px;
 }
 .pagination{
     margin-top: 24px;
     float: right;
 }
+
 </style>
