@@ -61,7 +61,13 @@ export default {
                 </el-icon>
                 <template #title>笔记管理</template>
             </el-menu-item>
-            <el-menu-item @click="menuItemClick" index="/user">
+            <el-menu-item v-if="store.isAdmin" @click="menuItemClick" index="/admin">
+                <el-icon>
+                    <Setting />
+                </el-icon>
+                <template #title>管理</template>
+            </el-menu-item>
+            <el-menu-item v-else @click="menuItemClick" index="/user">
                 <el-icon>
                     <User />
                 </el-icon>

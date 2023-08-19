@@ -9,6 +9,7 @@ export const useStore = defineStore('isCollapse', {
       aid:1,
       txt:'系统',
       loading:false,
+      isAdmin:false,
     }
   },
   // 也可以定义为

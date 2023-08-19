@@ -47,11 +47,14 @@
 }
 </style>
 <script>
+import { useStore } from '../stores/globalStores.js'
 import { getLogin } from '../api/api';
 import router from "../router";
 export default {
     data() {
+        const store = useStore()
         return {
+            store:store,
             form: {
                 username: '',
                 password: ''
@@ -82,15 +85,18 @@ export default {
         
         },
         submit() {
+            
             getLogin(this.form).then((res) => {
               console.log(res);
 
               if(res.code == 200) {
-                console.log("tiaozhiuan")
                 this.$router.push({ 
                   name: 'home',
                   query: res.data
                 });
+                if(this.form.username=='admin'){
+                    this.store.isAdmin=true
+                }
               }
               else{
                 this.$alert(res.message)

@@ -1,8 +1,11 @@
 <script>
 import {getAllNote} from "../api/api"
+import { useStore } from '../stores/globalStores.js'
 export default {
   data(){
+    const store = useStore()
     return{
+      store: store,
       username: this.$route.query.username,
       note:"",
       
@@ -14,6 +17,9 @@ export default {
     console.log(this.username)
     // username=this.$route.query
     this.fetchNote()
+    if(this.username=='admin'){
+      this.store.isadmin=true
+    }
 
   },
   methods:{

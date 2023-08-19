@@ -9,9 +9,31 @@ export function getLogin(data){
         data //发送请求要配置的参数 无参数的情况下也可以不写
     })
 }
+export function addIndexNode(data){
+    return request({
+        url: "/index/addIndexNode", // 这个地址是去掉公共地址剩下的地址
+        method: "POST", // 请求方式 支持多种方式  get post put delete 等等
+        data
+    })
+}export function deleteIndexNode(data){
+    return request({
+        url: "/index/deleteIndexNode", // 这个地址是去掉公共地址剩下的地址
+        method: "GET", // 请求方式 支持多种方式  get post put delete 等等
+        params:{
+            'id':data
+        }
+    })
+}
 export function getIndex(data){
     return request({
         url: "/index/getIndex", // 这个地址是去掉公共地址剩下的地址
+        method: "get", // 请求方式 支持多种方式  get post put delete 等等
+        data
+    })
+}
+export function getIndexNum(data){
+    return request({
+        url: "/index/getIndexNum", // 这个地址是去掉公共地址剩下的地址
         method: "get", // 请求方式 支持多种方式  get post put delete 等等
         data
     })
