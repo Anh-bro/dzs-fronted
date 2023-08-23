@@ -1,5 +1,5 @@
 <template>
-    <div style="height:100%;width:100%;background-image: linear-gradient( 135deg, #ABDCFF 10%, #0396FF 100%);">
+    <div v-loading="loading" element-loading-text="等待后台启动..." style="height:100%;width:100%;background-image: linear-gradient( 135deg, #ABDCFF 10%, #0396FF 100%);">
 
 
         <el-form ref="form" label-width='70px' class='login-container' :model="form" :rules="rules">
@@ -49,11 +49,13 @@
 <script>
 import { useStore } from '../stores/globalStores.js'
 import { getLogin } from '../api/api';
+import request from "../api/request";
 import router from "../router";
 export default {
     data() {
         const store = useStore()
         return {
+            loading:false,
             store:store,
             form: {
                 username: '',
@@ -70,6 +72,8 @@ export default {
                 ]
             }
         }
+    },
+    mounted(){
     },
     methods: {
         open(msg){
@@ -97,6 +101,7 @@ export default {
                 if(this.form.username=='admin'){
                     this.store.isAdmin=true
                 }
+                this.store.username=this.form.username
               }
               else{
                 this.$alert(res.message)

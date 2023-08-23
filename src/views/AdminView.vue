@@ -33,7 +33,7 @@
     </el-col>
     <el-col :span="16" margin-left="5px">
         <el-scrollbar max-height="400px"  style="scroll-bahavior: smooth;">
-            <el-table :data="passageData" style="width: 100%"  border=true>
+            <el-table highlight-current-row ref="myTable" :data="passageData" style="width: 100%"  border=true @row-click="selectionLineChangeHandle">
                 <el-table-column prop="aid" label="Aid" width="50px" />
                 <el-table-column prop="content" label="Content" show-overflow-tooltip=true>
                     <template #default="scope">
@@ -45,11 +45,11 @@
         </el-scrollbar>
     </el-col>
     <el-col :span="24">
-        <el-card shadow="hover" height="200" v-loading="loading">
+        <el-card shadow="hover" height="200" v-loading="loading" >
             <div style="height: 200px;">
-                //TODO 添加文章表单
-                <el-form :model="form" :inline="true">
-                    <el-form-item label="添加类型：">
+                <!-- //TODO 添加文章表单 -->
+                <el-form :model="form" :inline="false">
+                    <el-form-item label="添加类型:">
                         <el-select v-model="form.level" placeholder="请选择类型">
                             <el-option label="一级标题" value="title1" />
                             <el-option label="二级标题" value="title2" />
@@ -57,28 +57,37 @@
                             <el-option label="图片" value="img" />
                         </el-select>
                     </el-form-item>
-                    <el-form-item label="文字内容">
+                    <el-form-item label="文字内容:">
                         <el-input v-model="form.content" type="textarea" />    
                         
                     </el-form-item>
-                    <el-form-item label="图片内容">
+                    <el-form-item label="图片内容:">
                         <el-upload
-                        ref="upload"
-                        class="upload-demo"
-                        action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
-                        :limit="1"
-                        :on-exceed="handleExceed"
-                        :auto-upload="false"
-                    >
-                        <template #trigger>
-                        <el-button type="primary">select file</el-button>
-                        </template>
-                        <el-button class="ml-3" type="success" @click="submitUpload">
-                        upload to server
-                        </el-button>
-                    </el-upload>
+                            ref="myupload"
+                            class="upload-demo"
+                            action="/api/upload"
+                            :limit="1"
+                            :on-exceed="handleExceed"
+                            :auto-upload="false"
+                            name="photo"
+                            :data="{aid:this.aid}"
+                        >
+                            <template #trigger>
+                                <el-button type="primary">select file</el-button>
+                            </template>
+                            <!-- <el-button class="ml-3" type="success" @click="submitUpload">
+                                upload to server
+                            </el-button> -->
+                        </el-upload>
+                        <el-button style="margin-left: 200px;" type="primary" @click="addPassageContent()">添加</el-button>
+                        <el-button style="margin-left: 20px;" type="primary" @click="deleteTableRow()">删除选中行</el-button>
+                    </el-form-item>
+                    <el-form-item>
+                        
+                        <!-- <el-button>Cancel</el-button> -->
                     </el-form-item>
                 </el-form>
+                 
             </div>
         </el-card>
     </el-col>
@@ -86,10 +95,13 @@
 
 </template>
 <script>
-import {getIndex,getIndexNum,addIndexNode,deleteIndexNode,getPassage} from "../api/api.js"
+import { getTransitionRawChildren } from "vue"
+import {deleteNoteByAidOrderid,getIndex,getIndexNum,addIndexNode,deleteIndexNode,getPassage,addPassageText,deletePassageContent} from "../api/api.js"
 export default{
     data(){
         return{
+            dataonLineListSelections:{},
+            aid:0,
             form:{
                 level:'',
                 content:'',
@@ -189,7 +201,7 @@ export default{
             const index = children.findIndex(d => d.id === data.id);
             children.splice(index, 1);
             // console.log(data.id)
-            //TODO 后端删除
+            // 后端删除
             this.loading=true
             await deleteIndexNode(data.id).then(res=>{
                 console.log(res)
@@ -201,9 +213,98 @@ export default{
                 console.log(res)
                 this.passageData=res.data
             })
+            this.aid=data.id
+        },
+        async addPassageContent(){
+            if(this.form.level==''){
+                ElNotification({
+                        title: '错误',
+                        message: '请选择类型！',
+                        type: 'error'
+                    })
+                return
+            }
+            if(this.aid==0){
+                ElNotification({
+                        title: '错误',
+                        message: '请先选择章节进行编辑！',
+                        type: 'error'
+                    })
+                return
+            }
+            if(this.form.level!="img"){
+                console.log(this.form.level)
+                if(this.form.content==''){
+                    ElNotification({
+                        title: '错误',
+                        message: '文字内容不能为空！',
+                        type: 'error'
+                    })
+                    return
+                }
+                addPassageText({
+                    aid:this.aid,
+                    level:this.form.level,
+                    content:this.form.content
+                }).then(res=>{
+                    console.log(res)
+
+                })
+            }else{
+                this.$refs.myupload.submit()
+
+                    
+            }
+            await getPassage(this.aid).then(res=>{
+                        console.log(res)
+                        this.passageData=res.data
+                        ElNotification({
+                            title: '成功',
+                            message: '添加成功！',
+                            type: 'sucess'
+                        })
+                        
+                        this.$forceUpdate()
+                    })
+            console.log(this.passageData)
+        },
+        async deleteTableRow(){
+            // console.log(this.$refs.myTable.selection)
+            console.log(this.dataonLineListSelections.aid);
+            await deletePassageContent({
+                aid:this.dataonLineListSelections.aid,
+                orderid:this.dataonLineListSelections.orderid
+            }).then(res=>{
+                // TODO 删除文章片段 对应的笔记也删除
+                deleteNoteByAidOrderid({
+                    aid:this.dataonLineListSelections.aid,
+                    orderid:this.dataonLineListSelections.orderid
+                }).then(res=>{
+                    console.log(res)
+                })
+                console.log(res)
+                if(res.code==200){
+                    getPassage(this.aid).then(res=>{
+                        console.log(res)
+                        this.passageData=res.data
+                    })
+                    this.$forceUpdate()
+                    ElNotification({
+                        title: '成功',
+                        message: '删除成功！',
+                        type: 'sucess'
+                    })
+                }
+                
+            })
+
+        },
+        selectionLineChangeHandle(val){
+            this.dataonLineListSelections = val;
         }
         
-    }
+    },
+    
 }
 </script>
 <style>

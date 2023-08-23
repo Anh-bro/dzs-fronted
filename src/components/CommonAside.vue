@@ -67,31 +67,15 @@ export default {
                 </el-icon>
                 <template #title>管理</template>
             </el-menu-item>
-            <el-menu-item v-else @click="menuItemClick" index="/user">
+            <!-- <el-menu-item v-else @click="menuItemClick" index="/user">
                 <el-icon>
                     <User />
                 </el-icon>
                 <template #title>个人中心</template>
-            </el-menu-item>
-            <!-- <el-menu-item @click="menuItemClick" index="/pdftest">
-                                                                                                    <el-icon>
-                                                                                                        <User />
-                                                                                                    </el-icon>
-                                                                                                    <template #title>pppdf</template>
-                                                                                                </el-menu-item> -->
+            </el-menu-item> -->
 
         </el-menu>
 
-        <!-- <el-menu background-color="#f7f8ff" active-text-color="#1b76f5" class="el-menu-vertical-demo" default-active="2"
-            :collapse="store.isCollapse" :collapse-transition="false"
-            style="position: absolute;bottom: 0;border-right: none;" :class="store.wid">
-            <el-menu-item @click="logout" index="/login">
-                <el-icon>
-                    <SwitchButton />
-                </el-icon>
-                <template #title>退出</template>
-            </el-menu-item>
-        </el-menu> -->
     </el-aside>
 </template>
 <style>

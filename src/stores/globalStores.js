@@ -4,6 +4,7 @@ import { defineStore } from 'pinia'
 export const useStore = defineStore('isCollapse', {
   state: () => {
     return {
+      username:'',
       isCollapse: true,
       wid: 'w200',
       aid:1,

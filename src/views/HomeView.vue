@@ -41,8 +41,8 @@ export default {
         <div class="user">
           <img src="../assets/images/QQ图片20221125222615.jpg" alt="">
           <div class="userinfo">
-            <p class="name">{{username}}</p>
-            <p class="role">超级管理员</p>
+            <p class="name">{{this.store.username}}</p>
+            <p class="role">{{this.store.isadmin?'管理员':'普通用户'}}</p>
           </div>
         </div>
         <div class="login-info">

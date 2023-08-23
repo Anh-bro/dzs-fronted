@@ -1,11 +1,12 @@
 <script>
-import {getAllNote,deleteNoteByAidOrderid} from "../api/api"
+import {getOriginalIndex,getAllNote,getNoteByAid,deleteNoteByAidOrderid} from "../api/api"
 import { useStore } from '../stores/globalStores.js'
 import { ElNotification } from 'element-plus'
 export default {
     data() {
         const store = useStore()
         return {
+            originalindex:{},
             loading:false,
             totalPage:0,
             pageSize:4,
@@ -38,14 +39,28 @@ export default {
     methods: {
         async fetchNote(){        //获取笔记数据
             this.loading=true
-            await getAllNote(this.aid).then(res=>{
+            await getAllNote().then(res=>{
                 console.log(res)
                 this.noteData=res.data
                 this.totalPage=res.data.length
                 this.tableData=this.noteData.slice(0,this.pageSize)
                 console.log(res.data)
             })
+            await getOriginalIndex().then(res=>{
+                console.log(res)
+                this.originalindex=res.data
+            })
+            var dic = new Array();
+            for(var i = 0; i < this.originalindex.length; i++) {
+                dic[this.originalindex[i].id]=this.originalindex[i].name
+                // console.log(dic);
+            }
+            for(var i = 0; i < this.noteData.length; i++){
+                this.noteData[i].title=dic[this.noteData[i].aid]
+            }
+            console.log(this.noteData)
             this.loading=false
+
         },
         handleEdit(index, row) {
             console.log(index, row);
@@ -132,9 +147,7 @@ export default {
     </el-row>
 </template>
 <style>
-.el-card{
-    height: 600px;
-}
+
 .pagination{
     margin-top: 24px;
     float: right;

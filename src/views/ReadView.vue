@@ -61,7 +61,7 @@
       <el-card shadow="hover" @click="clickTreeNode" v-loading="loading">
         <el-input placeholder="输入关键字进行过滤" v-model="filterText">
         </el-input>
-        <el-scrollbar max-height="600px">
+        <el-scrollbar >
           <el-tree style="max-height: 350px;" class="filter-tree" :data="data" :props="defaultProps" 
             :filter-node-method="filterNode" node-key="id" :default-expanded-keys="expandkey" ref="tree">
 
@@ -69,7 +69,7 @@
               <span class="custom-tree-node">
                 <span>{{ node.label }}</span>
                 <span v-if="data.children.length == 0">
-                  <a @click="jump(data)"> 跳转 </a>
+                  <a @click="jump(node,data)"> 跳转 </a>
                 </span>
               </span>
             </template>
@@ -137,7 +137,7 @@
   </el-row>
 </template>
 <script>
-import { getIndex,getPassage,getNote,updateNote } from '../api/api';
+import { getIndex,getPassage,getNote,updateNote, getNoteByAid } from '../api/api';
 export default {
   watch: {
     filterText(val) {
@@ -149,25 +149,30 @@ export default {
     if(this.$route.query.aid!=undefined){
       this.aid=this.$route.query.aid
       this.expandkey.push(Number(this.$route.query.aid))
+      this.fetchPassageNote(this.$route.query.aid)
     }
     console.log(this.expandkey)
-    this.fetchData()
+    this.fetchData(this.aid)
   },
   methods: {
-    async fetchData(){
-      console.log(this.aid)
-      await getIndex().then(res => {
-        console.log(res)
-        this.data= res.data
-      })
-      await getPassage(this.aid).then(res=>{
+    async fetchPassageNote(aid){
+      await getPassage(aid).then(res=>{
         console.log(res)
         this.textData=res.data
       })
-      await getNote(this.aid).then(res=>{
+      await getNote(aid).then(res=>{
         console.log(res)
         this.noteData=res.data
       })
+    },
+    async fetchData(){
+      console.log(this.aid)
+      await getIndex().then(res => {
+        console.log("index")
+        console.log(res)
+        this.data= res.data
+      })
+
       this.loading=false
       console.log(this.expandkey)
 
@@ -247,12 +252,13 @@ export default {
       if (!value) return true;
       return data.label.indexOf(value) !== -1;
     },
-    async jump(data) {
-      console.log(data.pid)
+    async jump(node,data) {
+      console.log("id",node.data.id)
+      this.aid=node.data.id
       // this.goAnchor(data.tagId)
       this.loading=true
-      await getPassage(data.pid).then(res=>{
-        console.log(res)
+      await getPassage(node.data.id).then(res=>{
+        console.log("getPassage",res)
 
         this.textData=res.data
         // this.textData.splice(res.length)
@@ -263,8 +269,8 @@ export default {
         console.log(this.textData)
         
       })
-      await getNote(data.pid).then(res=>{
-        console.log(res)
+      await getNoteByAid(node.data.id).then(res=>{
+        console.log("getNote",res)
         this.noteData=res.data
       })
       this.$forceUpdate()
@@ -286,7 +292,7 @@ export default {
 
     return {
       pid:1,
-      aid:2,
+      aid:0,
       dialogFormVisible: false,
       expandkey:[],
       loading: true,
@@ -297,75 +303,10 @@ export default {
         noteid:0,
         content:""
       },
-      noteData: [
-        {
-          orderid: 2,
-          content: "这是一段笔记"
-        }
-      ],
+      noteData: [],
       markData: ['3-2'
       ],
-      textData: [
-        {
-          level: "title1",
-          content: "理论综述"
-        },
-        {
-          level: "paragraph",
-          content: "中国特色社会主义是中国共产党对现阶段纲领的概括，其科学涵义是要求把马克思主义的普遍真理同本国的具体实际结合起来，走适合中国特点的道路，逐步实现工业、农业、国防和科学技术现代化，把中国建设成为一个富强、民主、文明、和谐、美丽的社会主义现代化强国 [3]  ，即一方面要坚持马克思主义的基本原理，走社会主义道路；另一方面必须从中国的实际出发，不照抄、照搬别国经验、模式，而是走具有中国特色的路。"
-        },
-        {
-          level: "paragraph",
-          content: "中国特色社会主义是中国共产党对现阶段纲领的概括，其科学涵义是要求把马克思主义的普遍真理同本国的具体实际结合起来，走适合中国特点的道路，逐步实现工业、农业、国防和科学技术现代化，把中国建设成为一个富强、民主、文明、和谐、美丽的社会主义现代化强国 [3]  ，即一方面要坚持马克思主义的基本原理，走社会主义道路；另一方面必须从中国的实际出发，不照抄、照搬别国经验、模式，而是走具有中国特色的路。"
-        },
-        {
-          level: "paragraph",
-          content: "中国共产党依据毛泽东倡导的马克思主义普遍真理同中国具体实际相结合的原则，总结长期探索所积累的经验，特别是十一届三中全会以来的实践，深刻地认识到建设中国社会主义的规律，在十二大提出“走自己的路，建设有中国特色的社会主义”的科学论断。党的十三大、十四大和十五大对这一论断形成一系列科学观点，制定一系列具体政策、措施。主要内容有：解放思想，实事求是，以实践作为检验真理的唯一标准；中国所要解决的主要矛盾是人民日益增长的美好生活需要和不平衡不充分的发展之间的矛盾， [1]  党和国家的工作重点必需转移到以经济建设为中心的社会主义现代化轨道上来；建设社会主义有一个很长的初级阶段，社会主义社会的根本任务是发展生产力，集中力量实现现代化；实行社会主义市场经济；改革是社会主义社会发展的重要动力，对外开放是实现社会主义现代化的必要条件；使社会主义民主制度化、法律化，依法治国，改革和完善国家的政治体制和领导体制；加强社会主义精神文明的建设，坚持四项基本原则与坚持改革开放两个基本点要互相结合，缺一不可；坚持和完善人民代表大会制度和共产党领导的多党合作和政治协商制度；改善和发展社会主义民族关系，加强民族团结：用一国两制来解决国家统一问题；执政党的党风问题关系到党的生死存亡；反对帝国主义、霸权主义、殖民主义、种族主义，维护世界和平。"
-        },
-        {
-          level: 'img',
-          content: 'https://pic.imgdb.cn/item/63ff5839f144a010072f258f.jpg'
-        },
-        {
-          level: "title1",
-          content: "内涵价值"
-
-        },
-        {
-          level: "title2",
-          content: "内涵"
-        },
-        {
-          level: "paragraph",
-          content: "马克思列宁主义、毛泽东思想、邓小平理论、三个代表重要思想、科学发展观、共产党行动指南、共青团核心价值、实体经济基础指导和无产阶级专政的人民民主的社会主义国家。科学发展、文化经济、持续发展是中华人民共和国的社会主义和谐社会构成的核心体系。"
-        },
-        {
-          level: "paragraph",
-          content: "中国特色社会主义的内涵，随着中国改革开放实践的发展而不断丰富和完善。党的十八大报告对统一于中国特色社会主义实践道路、理论和制度关系，作深刻阐述。这是党和人民九十多年奋斗、创造、积累的成就。学习贯彻十八大精神，是要坚持和发展中国特色社会主义，深入理解把握其科学内涵、掌握其发展规律。"
-        },
-        {
-          level: "paragraph",
-          content: "从中国特色社会主义这一科学命题的提出，到中国特色社会主义道路的确立和发展, 党在改革开放和社会主义现代化建设过程中, 对中国特色社会主义道路内涵的认识逐步深化。在纪念毛泽东同志诞辰110周年座谈会上，胡锦涛同志对道路内涵作表述。党的十八大报告，进一步阐述中国特色社会主义道路的科学涵义。"
-        },
-        {
-          level: "paragraph",
-          content: "中国特色社会主义道路，是形成和发展中国特色社会主义理论体系、坚持和完善中国特色社会主义制度的重要途径。新中国成立初期，中国共产党领导中国人民取得新民主主义革命的胜利，建立了社会主义制度，并初步实践建设社会主义，为中国特色社会主义道路的形成奠定了坚实基础。党的十一届三中全会以来，中国共产党带领中国人民在总结前期探索的经验和教训的基础上，开辟了中国特色社会主义道路，形成了中国特色社会主义理论体系。正因为依托中国特色社会主义道路，所以形成和发展了中国特色社会主义理论体系。而确立中国特色社会主义制度，则从根本上改变了中国的历史命运。由于坚定不移地走中国特色社会主义道路，又在不断地促进社会主义制度的完善。由于紧紧依托中国特色社会主义道路，则更好地坚持和完善了社会主义制度。"
-        },
-        {
-          level: "paragraph",
-          content: "中国特色社会主义理论体系，消除中国在发展社会主义时遇到的困惑，明确中国特色社会主义道路的本质要求和价值目标，是党开辟和坚持中国特色社会主义道路的行动指南。中国特色社会主义理论体系中的邓小平理论，在社会主义本质论、社会主义初级阶段论、社会主义改革开放论和社会主义市场经济论等重要理论方面，对如何建设和发展社会主义作明确的、系统的回答，为坚持中国特色社会主义道路奠定理论基础；中国特色社会主义理论体系中的“三个代表”重要思想，科学回答“建设什么样的党、怎样建设党”这个关键性问题，增强了人们对中国共产党执政的信心，并在经济、政治、文化、军事、外交等方面提出一系列新理论，把中国特色社会主义事业成功推向新世纪；中国特色社会主义理论体系中的科学发展观，以其对“实现什么样的发展、怎样发展”的精辟阐释，成为坚持中国特色社会主义道路的重要思想保障，把中国特色社会主义推向了新的发展阶段。"
-        },
-        {
-          level: "title2",
-          content: "核心价值观"
-        },
-        {
-          level: "paragraph",
-          content: "社会主义核心价值体系主要由坚持马克思主义指导思想，坚持中国特色社会主义共同理想，坚持以爱国主义为核心的民族精神和以改革创新为核心的时代精神和坚持社会主义荣辱观组成。2012年11月，党的十八大报告首次以12个词概括社会主义核心价值观：倡导富强、民主、文明、和谐，倡导自由、平等、公正、法治，倡导爱国、敬业、诚信、友善，积极培育社会主义核心价值观。"
-        }
-
-
-      ],
+      textData: [],
       data: [{
         id: 1,
         label: '一级 1',

@@ -31,6 +31,12 @@ export function getIndex(data){
         data
     })
 }
+export function getOriginalIndex(data){
+    return request({
+        url: "/index/getOriginalIndex", 
+        method: "get", 
+    })
+}
 export function getIndexNum(data){
     return request({
         url: "/index/getIndexNum", // 这个地址是去掉公共地址剩下的地址
@@ -48,6 +54,28 @@ export function getPassage(data){
         }
     })
 }
+export function addPassageText(data){
+    return request({
+        url:"/passage/addPassageText",
+        method:"get",
+        params:{
+            'aid':data.aid,
+            'level':data.level,
+            'content':data.content
+        }
+    })
+}
+export function deletePassageContent(data){
+    return request({
+        url:"/passage/deletePassageContent",
+        method:"get",
+        params:{
+            'aid':data.aid,
+            'orderid':data.orderid
+        }
+    })
+}
+
 
 export function getNote(data){
     return request({
@@ -58,9 +86,18 @@ export function getNote(data){
         }
     })
 }
+export function getNoteByAid(data){
+    return request({
+        url: "/note/getNoteByAid", 
+        method: "get", 
+        params:{
+            'aid':data
+        }
+    })
+}
 export function getAllNote(data){
     return request({
-        url: "/note/getAllNote", 
+        url: "/note/getNote", 
         method: "get", 
     })
 }
