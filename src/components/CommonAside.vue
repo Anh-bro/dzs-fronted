@@ -16,7 +16,7 @@ export default {
             // console.log(e['index'])
             console.log(e['index'])
             this.$router.push(e['index'])
-            this.store.loading=true
+            this.store.loading = true
         },
         logout(e) {
             Cookie.remove('token')
@@ -33,28 +33,28 @@ export default {
     <el-aside :width="store.isCollapse ? '64px' : '200px'"
         style=" border-right:1px solid #dcdfe6 ;background-color: #f7f8ff;;height: 100%;">
 
-        <div class="logo">{{store.txt}}</div>
+        <div class="logo">{{ store.txt }}</div>
         <el-menu active-text-color="#1b76f5" background-color="#f7f8ff" class="el-menu-vertical-demo" default-active="2"
             style="border-right: none" :collapse="store.isCollapse" :collapse-transition="false">
             <el-menu-item @click="menuItemClick" index="/home">
                 <el-icon>
-                <Position />
-            </el-icon>
-            <!-- <span>主页</span> -->
-            <template #title>主页</template>
-        </el-menu-item>
+                    <Position />
+                </el-icon>
+                <!-- <span>主页</span> -->
+                <template #title>主页</template>
+            </el-menu-item>
             <el-menu-item @click="menuItemClick" index="/read">
                 <el-icon>
                     <View />
                 </el-icon>
                 <template #title>阅读</template>
             </el-menu-item>
-            <!-- <el-menu-item @click="menuItemClick" index="/tags">
+            <el-menu-item @click="menuItemClick" index="/search">
                 <el-icon>
-                    <Collection />
+                    <Search />
                 </el-icon>
-                <template #title>书签</template>
-            </el-menu-item> -->
+                <template #title>搜索</template>
+            </el-menu-item>
             <el-menu-item @click="menuItemClick" index="/note">
                 <el-icon>
                     <DocumentCopy />
@@ -94,7 +94,7 @@ export default {
     padding-top: 10px;
     padding-bottom: 10px;
     /* background-color: rgb(27, 118, 245); */
-    background: linear-gradient(180deg, rgba(27,118,245,1) 10%, rgba(247,248,255,1) 100%);
+    background: linear-gradient(180deg, rgba(27, 118, 245, 1) 10%, rgba(247, 248, 255, 1) 100%);
     color: #fff;
     font-size: 24px;
 }

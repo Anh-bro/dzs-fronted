@@ -16,7 +16,7 @@ const routes = [
       { path: '/home', name: 'home', component: HomeView },
       { path: '/read', name: 'read', component: () => import('../views/ReadView.vue') },
       { path: '/user', name: 'user', component: () => import('../views/UserView.vue') },
-      { path: '/tags', name: 'tags', component: () => import('../views/TagsView.vue') },
+      { path: '/search', name: 'search', component: () => import('../views/SearchView.vue') },
       { path: '/note', name: 'note', component: () => import('../views/NoteView.vue') },
       { path: '/admin', name: 'admin', component: () => import('../views/AdminView.vue') },
 

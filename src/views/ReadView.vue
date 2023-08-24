@@ -57,39 +57,37 @@
 
 <template>
   <el-row gutter="20" v-loading="loading">
-    <el-col :span="6" style="overflow-x: hidden;">
-      <el-card shadow="hover" @click="clickTreeNode" v-loading="loading">
-        <el-input placeholder="输入关键字进行过滤" v-model="filterText">
-        </el-input>
-        <el-scrollbar >
-          <el-tree style="max-height: 350px;" class="filter-tree" :data="data" :props="defaultProps" 
-            :filter-node-method="filterNode" node-key="id" :default-expanded-keys="expandkey" ref="tree">
+    <transition name="el-zoom-in-bottom">
+      <el-col v-show="show" :span="6" style="z-index: 1; position: fixed; overflow-x: hidden; right: 10px;bottom: 50px;">
+        <el-card shadow="always" @click="clickTreeNode" v-loading="loading">
+          <el-input placeholder="输入关键字进行过滤" v-model="filterText">
+          </el-input>
+          <el-scrollbar>
+            <el-tree style="max-height: 350px;" class="filter-tree" :data="data" :props="defaultProps"
+              :filter-node-method="filterNode" node-key="id" :default-expanded-keys="expandkey" ref="tree">
 
-            <template #default="{ node, data }">
-              <span class="custom-tree-node">
-                <span>{{ node.label }}</span>
-                <span v-if="data.children.length == 0">
-                  <a @click="jump(node,data)"> 跳转 </a>
+              <template #default="{ node, data }">
+                <span class="custom-tree-node">
+                  <span>{{ node.label }}</span>
+                  <span v-if="data.children.length == 0">
+                    <a @click="jump(node, data)"> 跳转 </a>
+                  </span>
                 </span>
-              </span>
-            </template>
+              </template>
 
-          </el-tree>
-        </el-scrollbar>
+            </el-tree>
+          </el-scrollbar>
 
-      </el-card>
-      <el-card shadow="hover" style="margin-top: 20px;">
-        <div class="dohistry" style="height:140px">
+        </el-card>
 
-          <el-button @click="open">Add Item</el-button>
-          <el-button @click="onDelete">Delete Item</el-button>
-        </div>
-      </el-card>
-    </el-col>
-    <el-col style="overflow-x: hidden;" :span="18" ref="asd">
-      <el-scrollbar max-height="600px" ref="page" style="scroll-bahavior: smooth;">
+      </el-col>
+    </transition>
 
-        <div v-for="(item, itemIndex) in textData" :class="item.level" class="pa" @mouseup="handleMouseUp" >
+    <el-col class="passagepart" style="overflow-x: hidden;" :span="24" ref="asd">
+
+      <el-scrollbar max-height="660px" ref="page" style="scroll-bahavior: smooth;">
+
+        <div v-for="(item, itemIndex) in textData" :class="item.level" class="pa" @mouseup="handleMouseUp">
           <a @click="markText($event)" class="sentence"
             v-for="(sentence, index ) in item.content.split(/(?=，)|(?<=，)|(?=；)|(?<=；)|(?=。)|(?<=。)/)"
             v-if="item.level != 'img'" :id="itemIndex + '-' + index">
@@ -108,7 +106,7 @@
             </div>
 
           </div>
-          
+
         </div>
 
         <el-dialog v-model="dialogFormVisible" title="Shipping address">
@@ -133,11 +131,29 @@
         <!-- //内容 -->
 
       </el-scrollbar>
+
     </el-col>
   </el-row>
+
+  <el-button style="position: fixed;right: 20px;bottom:10px" type="primary" @click="show = !show">
+    目录
+    <el-icon>
+      <Expand />
+    </el-icon>
+  </el-button>
+  <el-button style="position: fixed;right: 110px;bottom:10px" type="primary" @click="this.$refs.page.scrollTo({
+    top: 0,
+    left: 0,
+    behavior: 'smooth'
+  })">
+    回到顶部
+    <el-icon>
+      <Top />
+    </el-icon>
+  </el-button>
 </template>
 <script>
-import { getIndex,getPassage,getNote,updateNote, getNoteByAid } from '../api/api';
+import { getIndex, getPassage, getNote, updateNote, getNoteByAid } from '../api/api';
 export default {
   watch: {
     filterText(val) {
@@ -146,58 +162,62 @@ export default {
   },
   mounted() {
     // console.log(this.$route.query)
-    if(this.$route.query.aid!=undefined){
-      this.aid=this.$route.query.aid
+    if (this.$route.query.aid != undefined) {
+      this.aid = this.$route.query.aid
       this.expandkey.push(Number(this.$route.query.aid))
       this.fetchPassageNote(this.$route.query.aid)
+    }
+    if (this.$route.query.orderid != undefined) {
+      this.orderid = this.$route.query.orderid
+      this.goAnchor(this.orderid)
     }
     console.log(this.expandkey)
     this.fetchData(this.aid)
   },
   methods: {
-    async fetchPassageNote(aid){
-      await getPassage(aid).then(res=>{
+    async fetchPassageNote(aid) {
+      await getPassage(aid).then(res => {
         console.log(res)
-        this.textData=res.data
+        this.textData = res.data
       })
-      await getNote(aid).then(res=>{
+      await getNote(aid).then(res => {
         console.log(res)
-        this.noteData=res.data
+        this.noteData = res.data
       })
     },
-    async fetchData(){
+    async fetchData() {
       console.log(this.aid)
       await getIndex().then(res => {
         console.log("index")
         console.log(res)
-        this.data= res.data
+        this.data = res.data
       })
 
-      this.loading=false
+      this.loading = false
       console.log(this.expandkey)
 
     },
-    async fetchNote(){        //获取笔记数据
-      await getNote(this.aid).then(res=>{
-        this.noteData=res.data
+    async fetchNote() {        //获取笔记数据
+      await getNote(this.aid).then(res => {
+        this.noteData = res.data
       })
     },
-    async addNote(){          // 点击确定按钮
-      this.tempnote.aid=this.aid
-      await updateNote(this.tempnote).then(res=>{   //调用后端接口
+    async addNote() {          // 点击确定按钮
+      this.tempnote.aid = this.aid
+      await updateNote(this.tempnote).then(res => {   //调用后端接口
         console.log(res)
       })
       this.fetchNote()          //更新页面的笔记数据
 
-      this.dialogFormVisible=false
+      this.dialogFormVisible = false
     },
     handleNote(e) {
       console.log(e)
-      this.orderid=e
-      this.tempnote.orderid=e
-      
+      this.orderid = e
+      this.tempnote.orderid = e
+
       let note = this.noteData.filter((t) => t.orderid == e)
-      this.tempnote.content=note[0]?.content
+      this.tempnote.content = note[0]?.content
 
       // console.log(this.tempnote)
       this.dialogFormVisible = true
@@ -252,29 +272,29 @@ export default {
       if (!value) return true;
       return data.label.indexOf(value) !== -1;
     },
-    async jump(node,data) {
-      console.log("id",node.data.id)
-      this.aid=node.data.id
+    async jump(node, data) {
+      console.log("id", node.data.id)
+      this.aid = node.data.id
       // this.goAnchor(data.tagId)
-      this.loading=true
-      await getPassage(node.data.id).then(res=>{
-        console.log("getPassage",res)
+      this.loading = true
+      await getPassage(node.data.id).then(res => {
+        console.log("getPassage", res)
 
-        this.textData=res.data
+        this.textData = res.data
         // this.textData.splice(res.length)
         // for(var i = 0; i < res.length; i++) {
         //   Vue.set(this.data,i,res[i])
         // }
         // this.textData.splice(0,1,res[0])
         console.log(this.textData)
-        
+
       })
-      await getNoteByAid(node.data.id).then(res=>{
-        console.log("getNote",res)
-        this.noteData=res.data
+      await getNoteByAid(node.data.id).then(res => {
+        console.log("getNote", res)
+        this.noteData = res.data
       })
       this.$forceUpdate()
-      this.loading=false
+      this.loading = false
 
     },
 
@@ -291,76 +311,24 @@ export default {
   data() {
 
     return {
-      pid:1,
-      aid:0,
+      show: true,
+      pid: 1,
+      aid: 0,
       dialogFormVisible: false,
-      expandkey:[],
+      expandkey: [],
       loading: true,
       filterText: '',
       count: 23,
       noteindex: 2,
-      tempnote:{
-        noteid:0,
-        content:""
+      tempnote: {
+        noteid: 0,
+        content: ""
       },
       noteData: [],
       markData: ['3-2'
       ],
       textData: [],
-      data: [{
-        id: 1,
-        label: '一级 1',
-        children: [{
-          id: 4,
-          label: '二级 1-1',
-          children: [{
-            id: 9,
-            label: '三级 1-1-1'
-          }, {
-            id: 10,
-            label: '三级 1-1-2'
-          }]
-        }]
-      },
-      {
-        id: 2,
-        label: '一级 2',
-        children: [{
-          id: 5,
-          label: '二级 2-1'
-        }, {
-          id: 6,
-          label: '二级 2-2'
-        }]
-      },
-      {
-        id: 3,
-        label: '一级 3',
-        children: [{
-          id: 7,
-          label: '二级 3-1'
-        }, {
-          id: 8,
-          label: '二级 3-2'
-        }]
-      },
-      {
-        id: 11,
-        label: '一级 4',
-        children: [{
-          id: 12,
-          label: '二级 4-1'
-        }, {
-          id: 13,
-          label: '二级 4-2'
-        }, {
-          id: 14,
-          label: '二级 4-3'
-        }, {
-          id: 15,
-          label: '二级 4-4'
-        }]
-      }],
+      data: [],
       defaultProps: {
         children: 'children',
         label: 'label'

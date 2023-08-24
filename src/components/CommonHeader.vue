@@ -26,13 +26,13 @@ export default {
         </div>
         <div class="r-content">
 
-            <el-input class="headerInput" v-model="searchContent" placeholder="查找内容">
+            <!-- <el-input class="headerInput" v-model="searchContent" placeholder="查找内容">
                 <template #prefix>
                     <el-icon>
                         <search />
                     </el-icon>
                 </template>
-            </el-input>
+            </el-input> -->
             <el-dropdown style="width: 40px; margin-left:20px;">
                 <span class="el-dropdown-link" style="width:40px ;">
                     <img style="width: 40px;height: 40px;border-radius: 50%;" src="../assets/images/QQ图片20221125222615.jpg"
