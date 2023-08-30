@@ -1,5 +1,5 @@
 <template>
-    <div v-loading="loading" element-loading-text="等待后台启动..." style="height:100%;width:100%;background-image: linear-gradient( 135deg, #ABDCFF 10%, #0396FF 100%);">
+    <div class="bg" v-loading="loading" element-loading-text="等待后台启动...">
 
 
         <el-form ref="form" label-width='70px' class='login-container' :model="form" :rules="rules">
@@ -17,10 +17,15 @@
             </el-form-item>
         </el-form>
     </div>
-
-    
 </template>
 <style>
+.bg {
+    height: 100%;
+    width: 100%;
+    background: url("../assets/bg.jpg");
+    background-position: center;
+}
+
 .login-container {
     width: 350px;
     border: 1px solid #eaeaea;
@@ -55,57 +60,57 @@ export default {
     data() {
         const store = useStore()
         return {
-            loading:false,
-            store:store,
+            loading: false,
+            store: store,
             form: {
                 username: '',
                 password: ''
             },
             rules: {
                 username: [
-                  { required: true, message: '请输入用户名', trigger: 'blur' },
-                  { min: 3, max: 6, message: '用户名长度在 3 到 6 个字符', trigger: 'blur' }
+                    { required: true, message: '请输入用户名', trigger: 'blur' },
+                    { min: 3, max: 6, message: '用户名长度在 3 到 6 个字符', trigger: 'blur' }
                 ],
                 password: [
-                  { required: true, message: '请输密码', trigger: 'blur' },
-                  { min: 3, max: 6, message: '密码长度在 3 到 6 个字符', trigger: 'blur' }
+                    { required: true, message: '请输密码', trigger: 'blur' },
+                    { min: 3, max: 6, message: '密码长度在 3 到 6 个字符', trigger: 'blur' }
                 ]
             }
         }
     },
-    mounted(){
+    mounted() {
     },
     methods: {
-        open(msg){
+        open(msg) {
             this.$alert(msg, {
                 confirmButtonText: '确定',
                 callback: action => {
                     this.$message({
-                    type: 'info',
-                    message: `action: ${ action }`
+                        type: 'info',
+                        message: `action: ${action}`
                     });
                 }
             });
-        
+
         },
         submit() {
-            
-            getLogin(this.form).then((res) => {
-              console.log(res);
 
-              if(res.code == 200) {
-                this.$router.push({ 
-                  name: 'home',
-                  query: res.data
-                });
-                if(this.form.username=='admin'){
-                    this.store.isAdmin=true
+            getLogin(this.form).then((res) => {
+                console.log(res);
+
+                if (res.code == 200) {
+                    this.$router.push({
+                        name: 'home',
+                        query: res.data
+                    });
+                    if (this.form.username == 'admin') {
+                        this.store.isAdmin = true
+                    }
+                    this.store.username = this.form.username
                 }
-                this.store.username=this.form.username
-              }
-              else{
-                this.$alert(res.message)
-              }
+                else {
+                    this.$alert(res.message)
+                }
             }).catch((err) => {
                 console.log(err);
                 this.open(err)

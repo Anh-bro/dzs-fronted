@@ -9,6 +9,14 @@ export default {
             searchContent: '',
             store: store
         }
+    },
+    methods: {
+        exit() {
+            this.$router.push({
+                name: 'login',
+
+            });
+        }
     }
 }
 
@@ -35,12 +43,11 @@ export default {
             </el-input> -->
             <el-dropdown style="width: 40px; margin-left:20px;">
                 <span class="el-dropdown-link" style="width:40px ;">
-                    <img style="width: 40px;height: 40px;border-radius: 50%;" src="../assets/images/QQ图片20221125222615.jpg"
-                        alt="">
+                    <img style="width: 40px;height: 40px;border-radius: 50%;" src="../assets/images/boy.png" alt="">
                 </span>
                 <template #dropdown>
                     <el-dropdown-menu>
-                        <el-dropdown-item>退出</el-dropdown-item>
+                        <el-dropdown-item @click="exit()">退出</el-dropdown-item>
                     </el-dropdown-menu>
                 </template>
             </el-dropdown>
@@ -57,7 +64,8 @@ export default {
 
 .header {
     width: 100%;
-    background-color: #fff;
+    /* background-color: #fff; */
+    background: url(../assets/headerbg.png);
     display: flex;
     justify-content: space-between;
     align-items: center;

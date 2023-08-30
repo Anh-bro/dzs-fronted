@@ -1,22 +1,57 @@
-body, h1, h2, h3, h4, h5, h6, hr, p, blockquote, dl, dt, dd, ul, ol, li, pre, form, fieldset, legend, button, input, textarea, th, td {
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+hr,
+p,
+blockquote,
+dl,
+dt,
+dd,
+ul,
+ol,
+li,
+pre,
+form,
+fieldset,
+legend,
+button,
+input,
+textarea,
+th,
+td {
   margin: 0;
   padding: 0
 }
-body{
-  background-color: #fafafa;
+
+body {
+  background-color: #f0f0f0;
 }
+
 html {
   color: #000;
-  overflow-y:hidden;
-  height:100%;
+  overflow-y: hidden;
+  height: 100%;
 }
 
-body, button, input, select, textarea {
+body,
+button,
+input,
+select,
+textarea {
   font: 12px arial;
-  height:100%;
+  height: 100%;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-size: 100%
 }
 
@@ -28,7 +63,8 @@ small {
   font-size: 12px
 }
 
-ul, ol {
+ul,
+ol {
   list-style: none
 }
 
@@ -44,11 +80,15 @@ legend {
   color: #000
 }
 
-fieldset, img {
+fieldset,
+img {
   border: 0
 }
 
-button, input, select, textarea {
+button,
+input,
+select,
+textarea {
   font-size: 100%
 }
 
@@ -94,7 +134,8 @@ textarea {
   font-size: 12px
 }
 
-label, button {
+label,
+button {
   cursor: pointer
 }
 

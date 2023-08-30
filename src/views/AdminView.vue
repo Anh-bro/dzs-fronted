@@ -15,9 +15,21 @@
                                     <span>{{ node.label }}</span>
 
                                     <span>
-                                        <a @click="append(data)"> 增加 </a>
-                                        <a style="margin-left: 8px" @click="remove(node, data)"> 删除 </a>
-                                        <a style="margin-left: 8px" @click="edit(node, data)"> 编辑 </a>
+                                        <a class="hoverchange" @click="append(data)">
+                                            <el-icon>
+                                                <Plus />
+                                            </el-icon>
+                                        </a>
+                                        <a class="hoverchange" style="margin-left: 8px" @click="remove(node, data)">
+                                            <el-icon>
+                                                <Minus />
+                                            </el-icon>
+                                        </a>
+                                        <a class="hoverchange" style="margin-left: 8px" @click="edit(node, data)">
+                                            <el-icon>
+                                                <Position />
+                                            </el-icon>
+                                        </a>
                                     </span>
                                 </span>
                             </template>
@@ -30,20 +42,23 @@
 
         <el-col :span="24" margin-left="5px">
             <el-scrollbar ref="page" max-height="660px" style="scroll-bahavior: smooth;">
-                <div v-for="(item) in passageData">
-                    <h2 v-if="item.level == 'title1'">{{ item.content }}</h2>
-                    <h3 v-if="item.level == 'title2'">{{ item.content }}</h3>
-                    <div v-if="item.level == 'paragraph'">{{ item.content }}</div>
-                    <img v-if="item.level == 'img'" :src="item.content" alt="loading.."
-                        style="height: 200px;text-align: center;">
+                <!-- //TODO文章样式 -->
+                <div v-for="(item) in passageData" @click="xuanzhong(item.orderid)" :id="item.orderid">
+                    <h2 class="passagepart title1" v-if="item.level == 'title1'">{{ item.content }}</h2>
+                    <h3 class="passagepart title1" v-if="item.level == 'title2'">{{ item.content }}</h3>
+                    <div class="passagepart paragraph" v-if="item.level == 'paragraph'">{{ item.content
+                    }}</div>
+                    <div class="passagepart img" v-if="item.level == 'img'">
+                        <img :src="item.content" alt="loading.." style="height: 200px;text-align: center;">
+                    </div>
+
                 </div>
             </el-scrollbar>
         </el-col>
         <transition name="el-zoom-in-bottom">
             <el-col style="position: fixed;bottom: 10px;" v-show="addmenushow" :span="24">
                 <el-card shadow="always" height="200" v-loading="loading">
-                    <div style="height: 200px;">
-                        <!-- //TODO 添加文章表单 -->
+                    <div style="height: 200px;width: 500px;">
                         <el-form :model="form" :inline="false">
                             <el-form-item label="添加类型:">
                                 <el-select v-model="form.level" placeholder="请选择类型">
@@ -53,27 +68,27 @@
                                     <el-option label="图片" value="img" />
                                 </el-select>
                             </el-form-item>
-                            <el-form-item label="文字内容:">
+                            <el-form-item v-if="!isImg" label="文字内容:">
                                 <el-input v-model="form.content" type="textarea" />
 
                             </el-form-item>
-                            <el-form-item label="图片内容:">
+                            <el-form-item v-else label="图片内容:">
                                 <el-upload ref="myupload" class="upload-demo" action="/api/upload" :limit="1"
                                     :on-exceed="handleExceed" :auto-upload="false" name="photo" :data="{ aid: this.aid }">
                                     <template #trigger>
-                                        <el-button type="primary">select file</el-button>
+                                        <el-button type="danger">选择文件</el-button>
                                     </template>
                                     <!-- <el-button class="ml-3" type="success" @click="submitUpload">
                                 upload to server
                             </el-button> -->
                                 </el-upload>
-                                <el-button style="margin-left: 200px;" type="primary"
-                                    @click="addPassageContent()">添加</el-button>
-                                <el-button style="margin-left: 20px;" type="primary"
-                                    @click="deleteTableRow()">删除选中行</el-button>
+
+
                             </el-form-item>
                             <el-form-item>
 
+                                <el-button style="margin-left: 20px;" type="danger"
+                                    @click="addPassageContent()">添加</el-button>
                                 <!-- <el-button>Cancel</el-button> -->
                             </el-form-item>
                         </el-form>
@@ -83,19 +98,22 @@
             </el-col>
         </transition>
     </el-row>
-    <el-button style="position: fixed;right: 20px;bottom:10px" type="primary" @click="indexshow = !indexshow">
+    <el-button style="position: fixed;right: 20px;bottom:10px" type="danger" @click="indexshow = !indexshow">
         目录
         <el-icon>
             <Expand />
         </el-icon>
     </el-button>
-    <el-button style="position: fixed;right: 230px;bottom:10px" type="primary" @click="addmenushow = !addmenushow">
+    <el-button style="position: fixed;right: 350px;bottom:10px" type="danger" @click="addmenushow = !addmenushow">
         添加
         <el-icon>
             <Expand />
         </el-icon>
     </el-button>
-    <el-button style="position: fixed;right: 110px;bottom:10px" type="primary" @click="this.$refs.page.scrollTo({
+    <el-button style="position: fixed;right: 230px;bottom:10px" type="danger" @click="deleteTableRow()">
+        删除选中行
+    </el-button>
+    <el-button style="position: fixed;right: 110px;bottom:10px" type="danger" @click="this.$refs.page.scrollTo({
         top: 0,
         left: 0,
         behavior: 'smooth'
@@ -112,6 +130,7 @@ import { deleteNoteByAidOrderid, getIndex, getIndexNum, addIndexNode, deleteInde
 export default {
     data() {
         return {
+            xuanzhongorderid: 0,
             indexshow: false,
             addmenushow: true,
             dataonLineListSelections: {},
@@ -130,6 +149,14 @@ export default {
     },
     mounted() {
         this.fetchData()
+    },
+    computed: {
+        isImg() {
+            if (this.form.level != 'img') {
+                return false;
+            }
+            return true;
+        }
     },
     methods: {
         async fetchData() {
@@ -281,15 +308,43 @@ export default {
                 this.$forceUpdate()
             })
             console.log(this.passageData)
+            this.$forceUpdate()
         },
         async deleteTableRow() {
+            if (this.xuanzhongorderid != -1 && this.aid != 0) {
+                this.xuanzhong(this.xuanzhongorderid)
+                await deletePassageContent({
+                    aid: this.aid,
+                    orderid: this.xuanzhongorderid
+                }).then(res => {
+                    deleteNoteByAidOrderid({
+                        aid: this.aid,
+                        orderid: this.xuanzhongorderid
+                    }).then(res => {
+                        console.log("deletenotebyorderid", res)
+                    })
+                    console.log(res)
+                    if (res.code == 200) {
+                        getPassage(this.aid).then(res => {
+                            console.log(res)
+                            this.passageData = res.data
+                        })
+                        this.$forceUpdate()
+                        ElNotification({
+                            title: '成功',
+                            message: '删除成功！',
+                            type: 'sucess'
+                        })
+                    }
+                })
+            }
             // console.log(this.$refs.myTable.selection)
             console.log(this.dataonLineListSelections.aid);
             await deletePassageContent({
                 aid: this.dataonLineListSelections.aid,
                 orderid: this.dataonLineListSelections.orderid
             }).then(res => {
-                // TODO 删除文章片段 对应的笔记也删除
+                //  删除文章片段 对应的笔记也删除
                 deleteNoteByAidOrderid({
                     aid: this.dataonLineListSelections.aid,
                     orderid: this.dataonLineListSelections.orderid
@@ -327,12 +382,37 @@ export default {
             })
 
         },
+        xuanzhong(orderid) {
+            if (this.xuanzhongorderid == 0) {
+                this.xuanzhongorderid = orderid
+            }
+            console.log(document.getElementById(orderid).style.backgroundColor)
+            // document.getElementById(orderid).style.backgroundColor = "#ff5f5f"
+            if (document.getElementById(orderid).style.backgroundColor != "rgb(255, 193, 189)") {
+                document.getElementById(orderid).style.backgroundColor = "#FFC1BD"
+            } else {
+                document.getElementById(orderid).style.backgroundColor = "transparent"
+            }
+            if (orderid != this.xuanzhongorderid) {
+                document.getElementById(this.xuanzhongorderid).style.backgroundColor = "transparent"
+            }
+            this.xuanzhongorderid = orderid
+        }
 
     },
 
 }
 </script>
 <style>
+.passagepart:hover {
+    background-color: #FFC1BD;
+    cursor: default
+}
+
+.hoverchange:hover {
+    background-color: red;
+}
+
 .custom-tree-node {
     flex: 1;
     display: flex;
@@ -340,5 +420,33 @@ export default {
     justify-content: space-between;
     font-size: 14px;
     padding-right: 8px;
+}
+
+.title1 {
+    text-decoration: solid;
+    font-size: 25px;
+    margin-bottom: 5px;
+}
+
+.title2 {
+    text-decoration: solid;
+    font-size: 20px;
+    margin-bottom: 5px;
+}
+
+.paragraph {
+    Text-indent: 2em;
+    font-size: medium;
+    margin-bottom: 10px;
+
+
+}
+
+.img {
+    margin: 0 auto;
+
+    img {
+        height: 200px;
+    }
 }
 </style>

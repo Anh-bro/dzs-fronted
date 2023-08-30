@@ -1,13 +1,21 @@
 <template>
     <el-row style="flex-wrap: wrap;">
         <el-col :span="24" style="text-align: center;">
-            <el-input style="width: 500px ;margin-top=20px" size="large" v-model="input" placeholder="输入搜索内容" clearable />
-            <el-button size="large" @click="searchFunction()">搜索</el-button>
+            <el-autocomplete :fetch-suggestions="searchHistory" style="width: 500px ;margin-top=20px" size="large"
+                v-model="input" placeholder="输入搜索内容" clearable />
+            <el-button style="margin-left: 10px;" type="danger" size="large" @click="searchFunction()">搜索</el-button>
 
             <transition name="el-zoom-in-center">
-                <el-scrollbar style="scroll-bahavior: smooth;margin-top: 10px;" max-height="650px">
+                <el-scrollbar v-loading="loading" style="scroll-bahavior: smooth;margin-top: 10px;" max-height="650px">
                     <el-table v-show="tableshow" border="true" :data="searchResult">
-                        <el-table-column prop="title" label="章节" width="100" />
+                        <el-table-column prop="title" label="章节" width="100">
+                            <template #default="scope">
+                                <el-button link type="primary" @click="jumptotitle(scope.$index)">
+                                    {{ scope.row.title }}
+                                </el-button>
+                                <!-- <el-button link type="primary" size="small">Edit</el-button> -->
+                            </template>
+                        </el-table-column>
                         <el-table-column prop="levelname" label="级别" width="100" />
                         <el-table-column prop="content" label="内容">
                             <template #default="scope">
@@ -26,16 +34,35 @@
     </el-row>
 </template>
 <script>
-import { searchPassage } from '../api/api.js'
+import { searchPassage, getSearch } from '../api/api.js'
 export default {
     data() {
         return {
+            loading: false,
             tableshow: false,
             input: '',
             searchResult: [],
         }
     },
     methods: {
+        searchHistory(s, cb) {
+
+            getSearch().then(res => {
+                console.log(res)
+                cb(res.data)
+            })
+        },
+        jumptotitle(i) {
+            console.log(this.searchResult[i])
+            this.$router.push({
+                name: 'read',
+                query: {
+                    aid: this.searchResult[i].aid,
+                    orderid: this.searchResult[i].orderid
+                }
+            });
+
+        },
         hightLight(data) {
             // 如果标题中包含，关键字就替换一下
             if (data.includes(this.input)) {
@@ -59,12 +86,12 @@ export default {
                     type: 'error'
                 })
             }
+            this.loading = true
             searchPassage(this.input).then(res => {
                 console.log(res)
                 this.searchResult = res.data
-
             })
-
+            this.loading = false
             this.tableshow = true
 
         },

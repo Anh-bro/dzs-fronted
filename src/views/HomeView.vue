@@ -1,14 +1,17 @@
 <script>
-import {getAllNote} from "../api/api"
+import { getAllNote, getSearch } from "../api/api"
 import { useStore } from '../stores/globalStores.js'
 export default {
-  data(){
+  data() {
     const store = useStore()
-    return{
+    return {
+      loading: false,
+      recentNote: [],
+      recentSearch: [],
       store: store,
       username: this.$route.query.username,
-      note:"",
-      
+      note: "",
+
     }
   },
   mounted() {
@@ -16,19 +19,43 @@ export default {
     console.log(this.$route.query)
     console.log(this.username)
     // username=this.$route.query
+    this.loading = true
     this.fetchNote()
-    if(this.username=='admin'){
-      this.store.isadmin=true
+    this.fetchSearch()
+    this.loading = false
+    if (this.username == 'admin') {
+      this.store.isadmin = true
     }
 
   },
-  methods:{
-    async fetchNote(){ 
-      getAllNote().then(res=>{
-        if(res.data.length!=0){
-          this.note=res.data[res.data.length-1].content
+  methods: {
+    async fetchNote() {
+      getAllNote().then(res => {
+        console.log("note", res)
+        if (res.data.length <= 3) {
+          this.recentNote = res.data
+        }
+        else {
+          this.recentNote = res.data.slice(res.data.length - 4, res.data.length - 1)
         }
       })
+    },
+    async fetchSearch() {
+      getSearch().then(res => {
+        console.log("search", res)
+        this.recentSearch = res.data
+      })
+    },
+    notejump(aid, orderid) {
+      console.log("aid", aid)
+      console.log("orderid", orderid)
+      this.$router.push({
+        name: 'read',
+        query: {
+          aid: aid,
+          orderid: orderid
+        }
+      });
     }
   }
 }
@@ -36,13 +63,21 @@ export default {
 
 <template>
   <el-row class="home" :gutter="20" type="flex">
-    <el-col  :span="8" style="overflow-x: hidden;">
-      <el-card shadow="hover">
+    <el-col :span="10" style="overflow-x: hidden;">
+      <el-card shadow="always">
+        <template #header>
+          <div class="card-header">
+
+            <span class="homecardtitle"><el-icon>
+                <Postcard />
+              </el-icon>用户基本资料</span>
+          </div>
+        </template>
         <div class="user">
-          <img src="../assets/images/QQ图片20221125222615.jpg" alt="">
+          <img src="../assets/images/boy.png" alt="">
           <div class="userinfo">
-            <p class="name">{{this.store.username}}</p>
-            <p class="role">{{this.store.isadmin?'管理员':'普通用户'}}</p>
+            <p class="name">{{ this.store.username }}</p>
+            <p class="role">{{ this.store.isadmin ? '管理员' : '普通用户' }}</p>
           </div>
         </div>
         <div class="login-info">
@@ -51,28 +86,63 @@ export default {
 
       </el-card>
     </el-col>
-    <el-col :span="16" style="overflow-x: hidden;">
-      <div class="block text-center" m="t-4">
+    <el-col :span="14" style="overflow-x: hidden;">
+      <div class="block text-center" style="box-shadow:var(--el-box-shadow-light)" m="t-4">
         <el-carousel trigger="click" height="240px">
-          <el-carousel-item v-for="item in 4" :key="item">
-            <h3 class="small justify-center" text="2xl">{{ item }}</h3>
+          <el-carousel-item style="text-align: center;">
+            <img style="width: auto;height: 100%;" src="../assets/images/1124825976_1564646047053_title0h.jpg" alt="">
+          </el-carousel-item>
+          <el-carousel-item style="text-align: center;">
+            <img style="width: auto;height: 100%;" src="../assets/images/1124819568_15645442123751n.jpg" alt="">
+          </el-carousel-item>
+          <el-carousel-item style="text-align: center;">
+            <img style="width: auto;height: 100%;" src="../assets/images/1124819568_15645442313421n.jpg" alt="">
           </el-carousel-item>
         </el-carousel>
       </div>
     </el-col>
-    <el-col :span="24">
-      
-      <el-card shadow="hover" style="margin-top:20px;">
-        
+    <el-col :span="12">
+
+      <el-card v-loading="loading" shadow="always" style="margin-top:20px;">
+
         <template #header>
           <div class="card-header">
-            <span>最近的笔记</span>
+            <span class="homecardtitle"><el-icon>
+                <Notebook />
+              </el-icon>最近的笔记</span>
           </div>
         </template>
 
-        <div v-if="this.note.length==0" style="height:230px">暂无笔记</div>
-        <div v-else style="height:230px">{{note}}</div>
-        
+        <div v-if="this.recentNote.length == 0" style="height:230px">暂无笔记</div>
+        <div v-else style="height:230px;font-size: 15px;margin-left: 20px;">
+          <div v-for="item in this.recentNote" style="margin-bottom: 8px;">
+            <a class="homelink" style="font-style: oblique;cursor:pointer" @click="notejump(item.aid, item.orderid)">{{
+              item.title }}</a>
+            <span>-------{{ item.content }}</span>
+          </div>
+        </div>
+
+
+      </el-card>
+    </el-col>
+    <el-col :span="12">
+
+      <el-card v-loading="loading" shadow="always" style="margin-top:20px;">
+
+        <template #header>
+          <div class="card-header">
+            <span class="homecardtitle"><el-icon>
+                <Collection />
+              </el-icon>最近的搜索</span>
+          </div>
+        </template>
+
+        <div v-if="this.recentSearch.length == 0" style="height:230px;font-size: 15px;">暂无搜索</div>
+        <div v-else style="height:230px;font-size: 15px;margin-left: 20px;">
+          <div v-for="item in this.recentSearch" style="margin-bottom: 8px;">
+            <a class="homelink" style="font-style: oblique;cursor:pointer">{{ item.value }}</a>
+          </div>
+        </div>
 
       </el-card>
     </el-col>
@@ -80,6 +150,18 @@ export default {
 </template>
 
 <style>
+.homecardtitle {
+  font-size: 15px;
+  color: red;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+}
+
+.homelink:hover {
+  color: red;
+}
+
 .el-carousel__item:nth-child(2n) {
   background-color: #99a9bf;
 }

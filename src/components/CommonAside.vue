@@ -31,11 +31,12 @@ export default {
 
 <template>
     <el-aside :width="store.isCollapse ? '64px' : '200px'"
-        style=" border-right:1px solid #dcdfe6 ;background-color: #f7f8ff;;height: 100%;">
+        style=" border-right:3px solid #c8152a ;background-color: #e32322;;height: 100%;">
 
-        <div class="logo">{{ store.txt }}</div>
-        <el-menu active-text-color="#1b76f5" background-color="#f7f8ff" class="el-menu-vertical-demo" default-active="2"
-            style="border-right: none" :collapse="store.isCollapse" :collapse-transition="false">
+        <div style="text-shadow: #000 1px 0 0, #000 0 1px 0, #000 -1px 0 0, #000 0 -1px 0;" class="logo">{{ store.txt }}
+        </div>
+        <el-menu text-color="#fff" active-text-color="#409eff" background-color="#e32322" class="el-menu-vertical-demo"
+            default-active="2" style="border-right: none" :collapse="store.isCollapse" :collapse-transition="false">
             <el-menu-item @click="menuItemClick" index="/home">
                 <el-icon>
                     <Position />
@@ -85,6 +86,8 @@ export default {
 
 .el-aside {
     background-color: #fff;
+    /* border-style: solid; */
+    /* border-right: #000; */
     overflow: hidden;
 }
 
@@ -94,7 +97,7 @@ export default {
     padding-top: 10px;
     padding-bottom: 10px;
     /* background-color: rgb(27, 118, 245); */
-    background: linear-gradient(180deg, rgba(27, 118, 245, 1) 10%, rgba(247, 248, 255, 1) 100%);
+    background: #e32322;
     color: #fff;
     font-size: 24px;
 }

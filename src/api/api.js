@@ -105,7 +105,7 @@ export function getNoteByAid(data) {
 }
 export function getAllNote(data) {
     return request({
-        url: "/note/getNote",
+        url: "/note/getAllNote",
         method: "get",
     })
 }
@@ -121,6 +121,14 @@ export function updateNote(data) {
 export function deleteNoteByAidOrderid(data) {
     return request({
         url: "/note/deleteNoteByAidOrderid",
+        method: "get",
+        params: data
+    })
+}
+
+export function getSearch(data) {
+    return request({
+        url: "/search/getSearch",
         method: "get",
         params: data
     })

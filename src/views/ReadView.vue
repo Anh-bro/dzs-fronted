@@ -1,4 +1,8 @@
 <style lang="less">
+.hoverchange:hover {
+  background-color: red;
+}
+
 .el-scrollbar {
   .title1 {
     text-decoration: solid;
@@ -70,7 +74,11 @@
                 <span class="custom-tree-node">
                   <span>{{ node.label }}</span>
                   <span v-if="data.children.length == 0">
-                    <a @click="jump(node, data)"> 跳转 </a>
+                    <a class="hoverchange" @click="jump(node, data)">
+                      <el-icon>
+                        <Position />
+                      </el-icon>
+                    </a>
                   </span>
                 </span>
               </template>
@@ -83,11 +91,12 @@
       </el-col>
     </transition>
 
-    <el-col class="passagepart" style="overflow-x: hidden;" :span="24" ref="asd">
+    <el-col style="overflow-x: hidden;" :span="24" ref="asd">
 
       <el-scrollbar max-height="660px" ref="page" style="scroll-bahavior: smooth;">
 
-        <div v-for="(item, itemIndex) in textData" :class="item.level" class="pa" @mouseup="handleMouseUp">
+        <div :id="item.orderid" v-for="(item, itemIndex) in textData" :class="item.level" class="pa"
+          @mouseup="handleMouseUp">
           <a @click="markText($event)" class="sentence"
             v-for="(sentence, index ) in item.content.split(/(?=，)|(?<=，)|(?=；)|(?<=；)|(?=。)|(?<=。)/)"
             v-if="item.level != 'img'" :id="itemIndex + '-' + index">
@@ -109,18 +118,18 @@
 
         </div>
 
-        <el-dialog v-model="dialogFormVisible" title="Shipping address">
+        <el-dialog v-model="dialogFormVisible" title="请输入笔记内容">
 
           <el-form>
-            <el-form-item label="Activity form">
+            <el-form-item label="笔记：">
               <el-input v-model="this.tempnote.content" type="textarea" />
             </el-form-item>
           </el-form>
 
           <template #footer>
             <span class="dialog-footer">
-              <el-button @click="dialogFormVisible = false">取消</el-button>
-              <el-button type="primary" @click="addNote()">
+              <el-button type="danger" @click="dialogFormVisible = false">取消</el-button>
+              <el-button type="danger" @click="addNote()">
                 确定
               </el-button>
             </span>
@@ -135,13 +144,13 @@
     </el-col>
   </el-row>
 
-  <el-button style="position: fixed;right: 20px;bottom:10px" type="primary" @click="show = !show">
+  <el-button style="position: fixed;right: 20px;bottom:10px" type="danger" @click="show = !show">
     目录
     <el-icon>
       <Expand />
     </el-icon>
   </el-button>
-  <el-button style="position: fixed;right: 110px;bottom:10px" type="primary" @click="this.$refs.page.scrollTo({
+  <el-button style="position: fixed;right: 110px;bottom:10px" type="danger" @click="this.$refs.page.scrollTo({
     top: 0,
     left: 0,
     behavior: 'smooth'
@@ -166,10 +175,21 @@ export default {
       this.aid = this.$route.query.aid
       this.expandkey.push(Number(this.$route.query.aid))
       this.fetchPassageNote(this.$route.query.aid)
+    } else {
+      this.fetchPassageNote(4)
+      this.expandkey.push(Number(4))
     }
     if (this.$route.query.orderid != undefined) {
       this.orderid = this.$route.query.orderid
-      this.goAnchor(this.orderid)
+      setTimeout(() => {
+        console.log("id2", document.getElementById(this.orderid))
+        this.$refs.page.scrollTo({
+          top: document.getElementById(this.orderid).offsetTop,
+          left: 0,
+          behavior: 'smooth'
+        })
+      }, 2000)
+      // this.goAnchor(this.orderid)
     }
     console.log(this.expandkey)
     this.fetchData(this.aid)
@@ -250,8 +270,9 @@ export default {
     },
 
     goAnchor(id) {
+      console.log(id)
       var anchor = document.getElementById(id);
-      console.log(anchor)
+
 
       this.$refs.page.scrollTo({
         top: anchor.offsetTop,
@@ -265,9 +286,9 @@ export default {
         this.count--
       }
     },
-    add() {
-      this.goAnchor(9)
-    },
+    // add() {
+    //   this.goAnchor(9)
+    // },
     filterNode(value, data) {
       if (!value) return true;
       return data.label.indexOf(value) !== -1;
