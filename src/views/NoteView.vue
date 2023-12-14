@@ -9,26 +9,11 @@ export default {
             originalindex: {},
             loading: false,
             totalPage: 0,
-            pageSize: 4,
-            noteData: [{
-                date: '2016-05-02',
-                name: '王小虎',
-                address: '上海市普陀区金沙江路 1518 弄'
-            }, {
-                date: '2016-05-04',
-                name: '王小虎',
-                address: '上海市普陀区金沙江路 1517 弄'
-            }, {
-                date: '2016-05-01',
-                name: '王小虎',
-                address: '上海市普陀区金沙江路 1519 弄'
-            }, {
-                date: '2016-05-03',
-                name: '王小虎',
-                address: '上海市普陀区金沙江路 1516 弄'
-            }],
+            pageSize: 8,
+            noteData: [],
             tableData: [],
             search: '',
+            store:store,
             aid: store.aid
         }
     },
@@ -39,8 +24,8 @@ export default {
     methods: {
         async fetchNote() {        //获取笔记数据
             this.loading = true
-            await getAllNote().then(res => {
-                console.log(res)
+            await getAllNote(this.store.username).then(res => {
+                console.log("getAllNote", res)
                 this.noteData = res.data
                 this.totalPage = res.data.length
                 this.tableData = this.noteData.slice(0, this.pageSize)
@@ -143,7 +128,7 @@ export default {
                 </div>
                 <div>
                     <el-pagination style=" justify-content: center;" background layout="prev, pager, next"
-                        :total="totalPage" :page-size="4" @current-change="onCurrentChange" />
+                        :total="totalPage" :page-size="8" @current-change="onCurrentChange" />
                 </div>
 
             </el-card>

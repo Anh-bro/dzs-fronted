@@ -19,6 +19,9 @@ const routes = [
       { path: '/search', name: 'search', component: () => import('../views/SearchView.vue') },
       { path: '/note', name: 'note', component: () => import('../views/NoteView.vue') },
       { path: '/admin', name: 'admin', component: () => import('../views/AdminView.vue') },
+      { path: '/personal', name: 'personal', component: () => import('../views/PersonalView.vue') },
+      { path: '/adduser', name: 'adduser', component: () => import('../views/AddUserView.vue') },
+      { path: '/mark', name: 'mark', component: () => import('../views/MarkView.vue') },
 
     ]
   }

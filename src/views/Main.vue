@@ -52,7 +52,5 @@ import CommonHeader from '../components/CommonHeader.vue'
   flex-wrap: nowrap;
 }
 
-.commoncontent .el-aside {
-  background-color: #fff;
-}
+
 </style>

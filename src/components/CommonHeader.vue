@@ -1,25 +1,16 @@
-<script>
+<script setup>
 import { useStore } from '../stores/globalStores.js'
+import router from "@/router";
+import {reactive} from "vue";
 
-export default {
-    data() {
-        const store = useStore()
-        console.log(store.isCollapse)
-        return {
-            searchContent: '',
-            store: store
-        }
-    },
-    methods: {
-        exit() {
-            this.$router.push({
-                name: 'login',
+const store = useStore()
 
-            });
-        }
-    }
+const searchContent=reactive('')
+
+function exit() {
+  store.isAdmin=false
+  router.push('/login')
 }
-
 </script>
 
 
@@ -33,14 +24,6 @@ export default {
             </el-button>
         </div>
         <div class="r-content">
-
-            <!-- <el-input class="headerInput" v-model="searchContent" placeholder="查找内容">
-                <template #prefix>
-                    <el-icon>
-                        <search />
-                    </el-icon>
-                </template>
-            </el-input> -->
             <el-dropdown style="width: 40px; margin-left:20px;">
                 <span class="el-dropdown-link" style="width:40px ;">
                     <img style="width: 40px;height: 40px;border-radius: 50%;" src="../assets/images/boy.png" alt="">
@@ -51,7 +34,6 @@ export default {
                     </el-dropdown-menu>
                 </template>
             </el-dropdown>
-
         </div>
     </el-header>
 </template>
@@ -65,11 +47,12 @@ export default {
 .header {
     width: 100%;
     /* background-color: #fff; */
-    background: url(../assets/headerbg.png);
+    background: url(../assets/headerbg.jpg);
+    background-size: 1000px 70px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 2px 10px 0 rgba(0, 0, 0, .05);
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
 
 .headerInput {

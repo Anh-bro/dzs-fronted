@@ -3,7 +3,7 @@
         <el-col :span="24" style="text-align: center;">
             <el-autocomplete :fetch-suggestions="searchHistory" style="width: 500px ;margin-top=20px" size="large"
                 v-model="input" placeholder="输入搜索内容" clearable />
-            <el-button style="margin-left: 10px;" type="danger" size="large" @click="searchFunction()">搜索</el-button>
+            <el-button style="margin-left: 10px;" type="primary" size="large" @click="searchFunction()">搜索</el-button>
 
             <transition name="el-zoom-in-center">
                 <el-scrollbar v-loading="loading" style="scroll-bahavior: smooth;margin-top: 10px;" max-height="650px">
@@ -33,21 +33,26 @@
 
     </el-row>
 </template>
-<script>
+<script >
 import { searchPassage, getSearch } from '../api/api.js'
+import {useStore} from "@/stores/globalStores";
+import {ElNotification} from "element-plus";
+
 export default {
     data() {
-        return {
-            loading: false,
-            tableshow: false,
-            input: '',
-            searchResult: [],
-        }
+      const store=useStore()
+      return {
+        loading: false,
+        tableshow: false,
+        input: '',
+        searchResult: [],
+        store: store
+      }
     },
     methods: {
         searchHistory(s, cb) {
 
-            getSearch().then(res => {
+            getSearch(this.store.username).then(res => {
                 console.log(res)
                 cb(res.data)
             })
@@ -87,7 +92,7 @@ export default {
                 })
             }
             this.loading = true
-            searchPassage(this.input).then(res => {
+            searchPassage(this.input,this.store.username).then(res => {
                 console.log(res)
                 this.searchResult = res.data
             })
